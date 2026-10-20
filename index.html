@@ -306,9 +306,11 @@ footer{padding:56px 0 48px}
       <svg class="ornament" viewBox="180 66 58 36" aria-hidden="true"><path d="M200 74 A13 13 0 1 0 207 98 A10.5 10.5 0 0 1 200 74 Z"/><path d="M228 70 L229.6 75.4 L235 77 L229.6 78.6 L228 84 L226.4 78.6 L221 77 L226.4 75.4 Z"/></svg>
       <h2>Hear first when the first drop lands</h2>
       <p class="t">Leave your email and we’ll send one note when the shop opens. Nothing else.</p>
-      <form class="signup" id="signup" name="waitlist" method="POST" action="https://docs.google.com/forms/d/e/GOOGLE_FORM_ID/formResponse" novalidate>
-        <p style="display:none"><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
-        <input type="email" id="email" name="entry.GOOGLE_ENTRY_ID" placeholder="Your email address" aria-label="Email address" autocomplete="email" required>
+      <form class="signup" id="signup" name="waitlist" method="POST" action="https://formsubmit.co/ajax/jamesmloveridge@gmail.com" novalidate>
+        <input type="hidden" name="_subject" value="New Valiosa waitlist sign-up">
+        <input type="hidden" name="_template" value="table">
+        <p style="display:none"><label>Leave this empty: <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
+        <input type="email" id="email" name="email" placeholder="Your email address" aria-label="Email address" autocomplete="email" required>
         <button class="btn solid" type="submit">Join the waitlist</button>
       </form>
       <p id="msg" role="status" aria-live="polite"></p>
@@ -349,11 +351,14 @@ footer{padding:56px 0 48px}
       msg.textContent="Thanks, you’re on the list. We’ll email you when the shop opens.";
       input.value="";
     };
-    if(form.elements["bot-field"].value){done();btn.disabled=false;return;}
-    var data=new URLSearchParams();
-    data.append(input.name,v);
-    // Google Forms does not allow reading the reply, so a sent request counts as success
-    fetch(form.action,{method:"POST",mode:"no-cors",body:data}).then(done).catch(function(){
+    if(form.elements["_honey"].value){done();btn.disabled=false;return;}
+    input.value=v;
+    fetch(form.action,{method:"POST",headers:{"Accept":"application/json"},body:new FormData(form)}).then(function(r){
+      return r.json();
+    }).then(function(j){
+      if(String(j.success)!=="true") throw new Error(j.message);
+      done();
+    }).catch(function(){
       msg.textContent="Sorry, that didn’t go through. Please try again in a moment.";
     }).then(function(){btn.disabled=false;});
   });
